@@ -136,10 +136,10 @@ public class Main {
         gameWindow.refresh();
         switch (ch) {
             case 'Q' -> shouldExit = true;
-            case 'N' -> keyCallBackWindow.timeout(NOOB.getValue());
-            case 'E' -> keyCallBackWindow.timeout(EASY.getValue());
-            case 'H' -> keyCallBackWindow.timeout(HARD.getValue());
-            case 'I' -> keyCallBackWindow.timeout(INSANE.getValue());
+            case 'N' -> keyCallBackWindow.timeout(NOOB);
+            case 'E' -> keyCallBackWindow.timeout(EASY);
+            case 'H' -> keyCallBackWindow.timeout(HARD);
+            case 'I' -> keyCallBackWindow.timeout(INSANE);
         }
     }
     static void gameOver() {

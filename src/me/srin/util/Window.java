@@ -116,4 +116,8 @@ public class Window {
     public void timeout(int delay) {
         wtimeout(handle, delay);
     }
+
+    public void timeout(Difficulty difficulty) {
+        timeout(difficulty.getValue());
+    }
 }
