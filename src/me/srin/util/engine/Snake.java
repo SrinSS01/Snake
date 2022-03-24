@@ -29,33 +29,6 @@ public class Snake {
             exit(1);
         }
     }
-    private static final List<Supplier<Coord>> walls = List.of(
-        () -> new Coord(gameWindow.getWidth() / 2, gameWindow.getHeight() / 2, -1, false, true),
-        () -> {
-            gameWindow.box();
-            gameWindow.refresh();
-            return new Coord(gameWindow.getWidth() / 2, gameWindow.getHeight() / 2, -1, false, true);
-        }, () -> {
-            int w = gameWindow.getWidth();
-            int h = gameWindow.getHeight();
-            gameWindow.hline((w - 20) / 2, (h - 5) / 2, 0, 20);
-            gameWindow.hline((w - 20) / 2, (h - 5) / 2 + 5, 0, 20);
-            gameWindow.border(' ', ' ', ' ', ' ', ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
-            gameWindow.hline(1, 0, 0, 7);
-            gameWindow.vline(0, 1, 0, 4);
-
-            gameWindow.hline(w - 1 - 7, 0, 0, 7);
-            gameWindow.vline(w - 1, 1, 0, 4);
-
-            gameWindow.hline(1, h - 1, 0, 7);
-            gameWindow.vline(0, h - 1 - 4, 0, 4);
-
-            gameWindow.hline(w - 1 - 7, h - 1, 0, 7);
-            gameWindow.vline(w - 1, h - 1 - 4, 0, 4);
-            gameWindow.refresh();
-            return new Coord((w - 20) / 2 + 8, (h - 5) / 2 + 2, -1, true, false);
-        }
-    );
     public Snake(
         int bodyTexture
     ) {
