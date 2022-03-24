@@ -42,7 +42,6 @@ public class LevelParser {
                     args = command_line.substring(command_line.indexOf('(') + 1, command_line.length() - 1).split(",");
                     command = command.substring(0, command_line.indexOf('('));
                 }
-                out.println(command);
                 switch (command) {
                     case "hline" -> {
                         assert args != null;
