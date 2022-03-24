@@ -2,9 +2,11 @@ package me.srin.util.engine;
 
 import me.srin.util.CursString;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static java.lang.System.exit;
 import static me.srin.Main.*;
 import static me.srin.util.Color.BLUE_BLUE;
 import static me.srin.util.Color.WHITE_RED;
@@ -16,17 +18,24 @@ public class Snake {
     private int level = 0;
     private int points = 0;
     private int size;
+    private static List<Supplier<Coord>> levels;
+    public static int levels_size;
+    static {
+        try {
+            levels = LevelParser.parse();
+            levels_size = levels.size();
+        } catch (IOException e) {
+            e.printStackTrace();
+            exit(1);
+        }
+    }
     private static final List<Supplier<Coord>> walls = List.of(
+        () -> new Coord(gameWindow.getWidth() / 2, gameWindow.getHeight() / 2, -1, false, true),
         () -> {
-            gameWindow.clear();
-            return new Coord(gameWindow.getWidth() / 2, gameWindow.getHeight() / 2, -1, false, true);
-        }, () -> {
-            gameWindow.clear();
             gameWindow.box();
             gameWindow.refresh();
             return new Coord(gameWindow.getWidth() / 2, gameWindow.getHeight() / 2, -1, false, true);
         }, () -> {
-            gameWindow.clear();
             int w = gameWindow.getWidth();
             int h = gameWindow.getHeight();
             gameWindow.hline((w - 20) / 2, (h - 5) / 2, 0, 20);
@@ -52,7 +61,7 @@ public class Snake {
     ) {
         this.bodyTexture = bodyTexture;
         body = new Body(gameWindow.getWidth() * gameWindow.getHeight());
-        reset(walls.get(0).get());
+        reset(levels.get(0).get());
     }
     public void reset(Coord coord) {
         size = 3;
@@ -88,7 +97,7 @@ public class Snake {
         scoreWindow.print(3, 4, CursString.create("Level: 0"));
         scoreWindow.refresh();
         selectDifficulty();
-        reset(walls.get(0).get());
+        reset(levels.get(0).get());
     }
     public boolean move(int x, int y) {
         if (start.isLock_y()) {
@@ -145,30 +154,30 @@ public class Snake {
         scoreWindow.attroff(COLOR_PAIR(BLUE_BLUE));
         scoreWindow.print(3, 4, CursString.create("Level: %d".formatted(level)));
         scoreWindow.refresh();
-        reset(walls.get(++level % walls.size()).get());
+        reset(levels.get(++level % levels_size).get());
     }
-    public synchronized void up() {
+    public void up() {
         if (!start.isLock_y()) {
             start.setIncrement_value(-1);
             start.setLock_y(true);
             start.setLock_x(false);
         }
     }
-    public synchronized void down() {
+    public void down() {
         if (!start.isLock_y()) {
             start.setIncrement_value(1);
             start.setLock_y(true);
             start.setLock_x(false);
         }
     }
-    public synchronized void right() {
+    public void right() {
         if (!start.isLock_x()) {
             start.setIncrement_value(1);
             start.setLock_y(false);
             start.setLock_x(true);
         }
     }
-    public synchronized void left() {
+    public void left() {
         if (!start.isLock_x()) {
             start.setIncrement_value(-1);
             start.setLock_y(false);
@@ -203,11 +212,11 @@ public class Snake {
 
         @Override
         public String toString() {
-            return "Body{" +
-                        "size = " + size +
-                        ", head = " + head +
-                        ", tail = " + tail +
-                    '}';
+            return "Body {" +
+                "size = " + size +
+                ", head = " + head +
+                ", tail = " + tail +
+            '}';
         }
     }
 }
