@@ -134,9 +134,9 @@ public class Snake {
         scoreWindow.attron(COLOR_PAIR(BLUE_BLUE));
         scoreWindow.hline(3, 2, ' ', 20);
         scoreWindow.attroff(COLOR_PAIR(BLUE_BLUE));
-        scoreWindow.print(3, 4, CursString.create("Level: %d".formatted(level)));
+        scoreWindow.print(3, 4, CursString.create("Level: %d".formatted(++level)));
         scoreWindow.refresh();
-        reset(levels.get(++level % levels_size).get());
+        reset(levels.get(level % levels_size).get());
     }
     public void up() {
         if (!start.isLock_y()) {
