@@ -2,7 +2,7 @@
 A simple snake game made with ncurses (Tested on windows only for now).
 
 ## How to play?
-* Download and unzip the zip file from [releases]()  
+* Download and unzip the zip file from [releases](https://github.com/SrinSS01/Snake/releases/tag/1.0)  
 * Then run the bat file  
 
 <img src="./images/zip.png"></img>
