@@ -15,6 +15,7 @@ import static me.srin.Main.*;
 public class LevelParser {
     private static final File DIRECTORY = new File(System.getProperty("user.dir") + "/levels/");
     public static final Pattern ARITHMETIC_PATTERN = Pattern.compile("(\\d+) *([+\\-*/]) *(\\d+)");
+    public static final Pattern CHARACTER_OR_ASCII_SCAN_PATTERN = Pattern.compile("^(\\d+)$|^'(.)'$");
     static {
         if (!DIRECTORY.exists() && DIRECTORY.mkdirs()) {
             out.println("Created directory " + DIRECTORY.getAbsolutePath());
@@ -49,7 +50,7 @@ public class LevelParser {
                         actions.add(() -> gameWindow.hline(
                                 toInt(argsFinal[0].trim()),
                                 toInt(argsFinal[1].trim()),
-                                toInt(argsFinal[2].trim()),
+                                (int) toCharacter(argsFinal[2].trim()),
                                 toInt(argsFinal[3].trim())
                         ));
                     }
@@ -59,7 +60,7 @@ public class LevelParser {
                         actions.add(() -> gameWindow.vline(
                                 toInt(argsFinal[0].trim()),
                                 toInt(argsFinal[1].trim()),
-                                toInt(argsFinal[2].trim()),
+                                (int) toCharacter(argsFinal[2].trim()),
                                 toInt(argsFinal[3].trim())
                         ));
                     }
@@ -79,14 +80,14 @@ public class LevelParser {
                         assert args != null;
                         final String[] argsFinal = args;
                         actions.add(() -> gameWindow.border(
-                                toBorder(argsFinal[0].trim()),
-                                toBorder(argsFinal[1].trim()),
-                                toBorder(argsFinal[2].trim()),
-                                toBorder(argsFinal[3].trim()),
-                                toBorder(argsFinal[4].trim()),
-                                toBorder(argsFinal[5].trim()),
-                                toBorder(argsFinal[6].trim()),
-                                toBorder(argsFinal[7].trim())
+                                toCharacter(argsFinal[0].trim()),
+                                toCharacter(argsFinal[1].trim()),
+                                toCharacter(argsFinal[2].trim()),
+                                toCharacter(argsFinal[3].trim()),
+                                toCharacter(argsFinal[4].trim()),
+                                toCharacter(argsFinal[5].trim()),
+                                toCharacter(argsFinal[6].trim()),
+                                toCharacter(argsFinal[7].trim())
                         ));
                     }
                 }
@@ -102,16 +103,23 @@ public class LevelParser {
         }
         return coords;
     }
-    private static long toBorder(String expression) throws IllegalArgumentException {
+    private static long toCharacter(String expression) throws IllegalArgumentException {
         if (expression == null) throw new IllegalArgumentException("expression cannot be null");
         return switch (expression) {
+            case "default_vline" -> ACS_VLINE;
+            case "default_hline" -> ACS_HLINE;
             case "default_ul" -> ACS_ULCORNER;
             case "default_ur" -> ACS_URCORNER;
             case "default_ll" -> ACS_LLCORNER;
             case "default_lr" -> ACS_LRCORNER;
             default -> {
-                if (!expression.matches("'.'")) throw new IllegalArgumentException("%s is an invalid argument".formatted(expression));
-                yield expression.charAt(1);
+                Matcher matcher = CHARACTER_OR_ASCII_SCAN_PATTERN.matcher(expression);
+                if (matcher.find()) {
+                    String ascii = matcher.group(1);
+                    String character = matcher.group(2);
+                    yield ascii != null? Integer.parseInt(ascii): character.charAt(0);
+                }
+                else throw new IllegalArgumentException("%s is an invalid argument".formatted(expression));
             }
         };
     }

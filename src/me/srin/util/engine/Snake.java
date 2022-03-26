@@ -84,6 +84,15 @@ public class Snake {
             var _x = (start.getX() + start.getIncrement_value()) % gameWindowWidth;
             if (_x < 0) _x += gameWindowWidth;
             start.setX(_x);
+        } else {
+            int gameWindowHeight = gameWindow.getHeight();
+            var _y = (start.getY() + start.getIncrement_value()) % gameWindowHeight;
+            if (_y < 0) _y += gameWindowHeight;
+            start.setY(_y);
+            int gameWindowWidth = gameWindow.getWidth();
+            var _x = (start.getX() + start.getIncrement_value()) % gameWindowWidth;
+            if (_x < 0) _x += gameWindowWidth;
+            start.setX(_x);
         }
         var charachter_at_snek_mouth = gameWindow.inch(start.getX(), start.getY()) & A_CHARTEXT;
         gameWindow.attron(COLOR_PAIR(WHITE_RED));

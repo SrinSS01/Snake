@@ -22,6 +22,8 @@ public class Main {
     private static final int A_ALTCHARSET = 0x00010000;
     public static final int A_REVERSE = 0x00200000;
     public static final int A_CHARTEXT = 0x0000ffff;
+    public static final long ACS_VLINE = PDC_ACS('x');
+    public static final long ACS_HLINE = PDC_ACS('q');
     public static final long ACS_ULCORNER = PDC_ACS('l');
     public static final long ACS_URCORNER = PDC_ACS('k');
     public static final long ACS_LLCORNER = PDC_ACS('m');
