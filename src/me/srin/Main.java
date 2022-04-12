@@ -98,7 +98,7 @@ public final class Main implements AutoCloseable {
             keyCallBackWindow.attroff(COLOR_PAIR(BLACK_WHITE));
             keyCallBackWindow.refresh();
             selectDifficulty();
-            snake = new Snake(args.length != 0? args[0].charAt(0): '+');
+            snake = new Snake('+');
             while (!shouldExit) {
                 int key = keyCallBackWindow.getch();
                 switch (key) {
