@@ -2,7 +2,7 @@ package me.srin.util.engine;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Supplier;
@@ -23,7 +23,7 @@ public class LevelParser {
         }
     }
     public static List<Supplier<Coord>> parse() throws IOException {
-        List<Supplier<Coord>> coords = new ArrayList<>();
+        List<Supplier<Coord>> coords = new LinkedList<>();
         File[] files = DIRECTORY.listFiles(it -> it.getName().endsWith(".snake"));
         if (files == null) {
             throw new RuntimeException("No levels found in " + DIRECTORY.getAbsolutePath());
@@ -32,7 +32,7 @@ public class LevelParser {
         final int height = gameWindow.getHeight();
         for (File file : files) {
             if (file.isDirectory() || !file.exists() || !file.canRead()) continue;
-            List<Runnable> actions = new ArrayList<>();
+            List<Runnable> actions = new LinkedList<>();
             Supplier<Coord> supplier = null;
             Scanner sc = new Scanner(file);
             while (sc.hasNext()) {
@@ -92,6 +92,7 @@ public class LevelParser {
                     }
                 }
             }
+            sc.close();
             final var supplierFinal = supplier;
             assert supplierFinal != null;
             coords.add(() -> {

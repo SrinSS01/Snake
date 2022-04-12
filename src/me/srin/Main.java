@@ -14,7 +14,7 @@ import static me.srin.util.Difficulty.*;
 import static pdcurses.PdcursesLibrary.*;
 import static me.srin.util.Color.*;
 
-public class Main {
+public final class Main implements AutoCloseable {
     static final Pointer<WINDOW> stdscr;
     public static final int WIDTH = 50;
     public static final int HEIGHT = 25;
@@ -38,7 +38,7 @@ public class Main {
     private static final GameOverWindow gameOverWindow;
     private static final MainMenuWindow mainMenuWindow;
     private static Snake snake;
-    public static final Random random = new Random();
+    public static final Random RANDOM = new Random();
     static {
         stdscr = initscr();
         cbreak();
@@ -79,51 +79,47 @@ public class Main {
         );
     }
     public static void main(String[] args) {
-        scoreWindow.print(3, 1, CursString.create("Points: 0"));
-        scoreWindow.print(3, 4, CursString.create("Level: 0"));
-        scoreWindow.attron(COLOR_PAIR(BLUE_BLUE));
-        scoreWindow.hline(3, 2, ' ', 20);
-        scoreWindow.attroff(COLOR_PAIR(BLUE_BLUE));
-        scoreWindow.refresh();
-        keyCallBackWindow.addch(3, 1, 'w');
-        keyCallBackWindow.addch(2, 2, 'a');
-        keyCallBackWindow.addch(3, 3, 's');
-        keyCallBackWindow.addch(4, 2, 'd');
-        keyCallBackWindow.attron(COLOR_PAIR(BLACK_WHITE));
-        keyCallBackWindow.addch(3, 0, '^');
-        keyCallBackWindow.addch(0, 2, '<');
-        keyCallBackWindow.addch(3, 4, 'v');
-        keyCallBackWindow.addch(6, 2, '>');
-        keyCallBackWindow.attroff(COLOR_PAIR(BLACK_WHITE));
-        keyCallBackWindow.refresh();
-        selectDifficulty();
-        snake = new Snake('+');
-        while (!shouldExit) {
-            int key = keyCallBackWindow.getch();
-            switch (key) {
-                case 27, 'q' -> {
-                    if (!isGameOver) {
-                        showMainMenu();
+        try(Main ignored = new Main()) {
+            scoreWindow.print(3, 1, CursString.create("Points: 0"));
+            scoreWindow.print(3, 4, CursString.create("Level: 0"));
+            scoreWindow.attron(COLOR_PAIR(BLUE_BLUE));
+            scoreWindow.hline(3, 2, ' ', 20);
+            scoreWindow.attroff(COLOR_PAIR(BLUE_BLUE));
+            scoreWindow.refresh();
+            keyCallBackWindow.addch(3, 1, 'w');
+            keyCallBackWindow.addch(2, 2, 'a');
+            keyCallBackWindow.addch(3, 3, 's');
+            keyCallBackWindow.addch(4, 2, 'd');
+            keyCallBackWindow.attron(COLOR_PAIR(BLACK_WHITE));
+            keyCallBackWindow.addch(3, 0, '^');
+            keyCallBackWindow.addch(0, 2, '<');
+            keyCallBackWindow.addch(3, 4, 'v');
+            keyCallBackWindow.addch(6, 2, '>');
+            keyCallBackWindow.attroff(COLOR_PAIR(BLACK_WHITE));
+            keyCallBackWindow.refresh();
+            selectDifficulty();
+            snake = new Snake(args.length != 0? args[0].charAt(0): '+');
+            while (!shouldExit) {
+                int key = keyCallBackWindow.getch();
+                switch (key) {
+                    case 27, 'q' -> {
+                        if (!isGameOver) {
+                            showMainMenu();
+                        }
                     }
+                    case 'w' -> snake.up();
+                    case 'a' -> snake.left();
+                    case 's' -> snake.down();
+                    case 'd' -> snake.right();
                 }
-                case 'w' -> snake.up();
-                case 'a' -> snake.left();
-                case 's' -> snake.down();
-                case 'd' -> snake.right();
+                int rnd_x = RANDOM.nextInt(gameWindow.getWidth() - 3) + 1;
+                int rnd_y = RANDOM.nextInt(gameWindow.getHeight() - 3) + 1;
+                isGameOver = snake.move(rnd_x, rnd_y);
+                if (isGameOver) gameOver();
             }
-            int rnd_x = random.nextInt(gameWindow.getWidth() - 3) + 1;
-            int rnd_y = random.nextInt(gameWindow.getHeight() - 3) + 1;
-            isGameOver = snake.move(rnd_x, rnd_y);
-            if (isGameOver) gameOver();
+        } catch (Exception e) {
+            LOGGER.log(SEVERE, "[ERROR]: ", e);
         }
-        cleanup(
-            scoreWindow,
-            gameWindow,
-            difficultySelectWindow,
-            mainMenuWindow,
-            gameOverWindow,
-            keyCallBackWindow
-        );
     }
     static void cleanup(Window... windows) {
         for (var window : windows) {
@@ -174,5 +170,17 @@ public class Main {
     }
     static short ordinal(Color color) {
         return (short) (color.ordinal() + 1);
+    }
+
+    @Override
+    public void close() {
+        cleanup(
+                scoreWindow,
+                gameWindow,
+                difficultySelectWindow,
+                mainMenuWindow,
+                gameOverWindow,
+                keyCallBackWindow
+        );
     }
 }

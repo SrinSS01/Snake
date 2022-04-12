@@ -52,12 +52,23 @@ public class Snake {
             body.push(_x, _y);
         }
         gameWindow.attroff(COLOR_PAIR(WHITE_RED));
-        int rnd_x = (int) (Math.random() % (gameWindow.getX() - 3) + 1);
-        int rnd_y = (int) (Math.random() % (gameWindow.getY() - 3) + 1);
-        gameWindow.addch(rnd_x, rnd_y, 'o');
+        int rnd_x = (int) (Math.random() % (gameWindow.getWidth() - 3) + 1);
+        int rnd_y = (int) (Math.random() % (gameWindow.getHeight() - 3) + 1);
+        generateFoodAtRandomLocation(rnd_x, rnd_y, 'o');
         gameWindow.refresh();
         gameWindow.getch();
     }
+
+    private void generateFoodAtRandomLocation(int x, int y, int foodTexture) {
+        var ch = gameWindow.inch(x, y) & A_CHARTEXT;
+        while (ch == bodyTexture || ch == 113 || ch == 120) {
+            x = RANDOM.nextInt(gameWindow.getWidth() - 3) + 1;
+            y = RANDOM.nextInt(gameWindow.getHeight() - 3) + 1;
+            ch = gameWindow.inch(x, y) & A_CHARTEXT;
+        }
+        gameWindow.addch(x, y, foodTexture);
+    }
+
     public void reset() {
         points = 0;
         level = 0;
@@ -94,34 +105,28 @@ public class Snake {
             if (_x < 0) _x += gameWindowWidth;
             start.setX(_x);
         }
-        var charachter_at_snek_mouth = gameWindow.inch(start.getX(), start.getY()) & A_CHARTEXT;
+        var characterAtSnakeMouth = gameWindow.inch(start.getX(), start.getY()) & A_CHARTEXT;
         gameWindow.attron(COLOR_PAIR(WHITE_RED));
         gameWindow.addch(start.getX(), start.getY(), bodyTexture);
         gameWindow.attroff(COLOR_PAIR(WHITE_RED));
         body.push(start.getX(), start.getY());
-        if (charachter_at_snek_mouth != 'o' && charachter_at_snek_mouth != '*') {
+        if (characterAtSnakeMouth != 'o' && characterAtSnakeMouth != '*') {
             var end = body.pop();
             gameWindow.attron(COLOR_PAIR(BLUE_BLUE));
             gameWindow.addch(end.getX(), end.getY(), ' ');
             gameWindow.attroff(COLOR_PAIR(BLUE_BLUE));
             gameWindow.refresh();
-        } else if (charachter_at_snek_mouth == '*') {
+        } else if (characterAtSnakeMouth == '*') {
             onLevelUp();
         } else {
-            var ch = gameWindow.inch(x, y) & A_CHARTEXT;
-            while (ch == bodyTexture || ch == 113 || ch == 120) {
-                x = random.nextInt(gameWindow.getWidth() - 3) + 1;
-                y = random.nextInt(gameWindow.getHeight() - 3) + 1;
-                ch = gameWindow.inch(x, y) & A_CHARTEXT;
-            }
             var food = (size - 3) == 19? '*': 'o';
-            gameWindow.addch(x, y, food);
+            generateFoodAtRandomLocation(x, y, food);
             size++;
             points += 2;
             onSnakeGrow();
             gameWindow.refresh();
         }
-        return charachter_at_snek_mouth == 113 || charachter_at_snek_mouth == 120 || charachter_at_snek_mouth == bodyTexture;
+        return characterAtSnakeMouth == 113 || characterAtSnakeMouth == 120 || characterAtSnakeMouth == bodyTexture;
     }
     public void onSnakeGrow() {
         scoreWindow.print(3, 1, CursString.create("Points: %d".formatted(points)));
